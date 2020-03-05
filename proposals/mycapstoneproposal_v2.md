@@ -38,25 +38,25 @@ The Capstone is a web application that touches on every major technology we cove
 
 **Walk through the application from the user's perspective.**
 
-Wow, I just realized I'm a young or old person and have nothing better to do than make friends cheaply near me. I wonder if there's an app that just displays all the possible cheap options all in one place... BAM! Live Cheap or Party Free (still have to come up with an actual name).. I can see all these different things i could do with the community and with easy to see discriptions and locations. My life is totally different now :)
+- Wow, I just realized I'm a young or old person and have nothing better to do than make friends cheaply near me. I wonder if there's an app that just displays all the possible cheap options all in one place... BAM! Live Cheap or Party Free (still have to come up with an actual name).. I can see all these different things i could do with the community and with easy to see discriptions and locations. My life is totally different now :)
 
 **What will they see on each page?**
 
-Trying to go with one page that displays todays events and if they search something specific it can just display those results.. possibly multiple pages for a max of a month out. The front page might have a little key in the top left corner with popular icon key values. nav bar on the side with options to save, create.
+- Trying to go with one page that displays todays events and if they search something specific it can just display those results.. possibly multiple pages for a max of a month out. The front page might have a little key in the top left corner with popular icon key values. nav bar on the side with options to save, create.
 
 **What can they input and click and see?**
 
-They'll see icons populate the page that are like or similar to whatever they are looking for. Input all of their details for their event with a manditory expiration datetime field.
+- They'll see icons populate the page that are like or similar to whatever they are looking for. Input all of their details for their event with a manditory expiration datetime field.
 
 **How will their actions correspond to events on the back-end?**
 
-I'm hoping that my back end will be able to successfully populate the page with results similar to whatever they search for. I think that's going to take a lot but im not sure. They should be able to save and be notified and also add events
+- I'm hoping that my back end will be able to successfully populate the page with results similar to whatever they search for. I think that's going to take a lot but im not sure. They should be able to save and be notified and also add events
 
 ## Data Model
 
 **What data will you need to store as part of your application? These should be specific nouns, collections of information that serve a collective purpose. Examples might be 'User', 'Book', 'ImageSet'.**
 
-events, images, user info,
+- events, images, user info,
 
 ## Schedule
 
