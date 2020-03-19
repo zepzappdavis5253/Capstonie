@@ -1,0 +1,122 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="ie=edge">
+        <!-- Vue -->
+        <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+        <!-- Axios -->
+        <script type="text/javascript" src="https://unpkg.com/axios/dist/axios.min.js"></script>
+        <!-- CSS -->
+        <link rel="stylesheet" href="{% static 'drumbeatapp/styles.css' %}">
+        <title>DrumBeat</title>
+    </head>
+    <body>
+        <div id="app">
+            <div class="time_signature_container">
+                <label>Time Signature:</label>
+                <span class="time_signature" id="time_signature">
+                    <select id="ts_beat_select" v-model="ts_beat">
+                        <option disabled>Beats</option>
+                        <option v-for="n in 12" :value="n">[[n]]</option>
+                    </select>
+                    /
+                    <select id="ts_value_select" v-model="ts_value">
+                        <option disabled>Note Value</option>
+                        <option v-for="value in ts_value_array" :value="value">[[value]]</option>
+                    </select>
+                </span>
+            </div>
+            <div class="tempo_container">
+                <label>Tempo:</label>
+                <span class="tempo" id="tempo_span">
+                    <input id="tempo_input" type="number" min="10" max="500" v-model="tempo_value">
+                </span>
+                bpm
+            </div>
+            <div class="inst_select_container">
+                <span id="instrument_select">
+                    <label>Instrument:</label>
+                    <select id="inst_select" v-model="inst_choice" @change="add_instrument">
+                        <option disabled>Choose an Instrument</option>
+                        <option v-for="instrument in inst_data" :value="instrument">[[instrument.name]]</option>
+                    </select>
+                </span>
+            </div>
+            <div class="interface_container" id="interface_container">
+                <div class="instrument_div" v-for="(instrument, inst_index) in score">
+                    <div class="delete">X</div>
+                    <div class="instrument_name">[[instrument.name]]</div>
+                    <div class="measure">
+                        <div class="beat_container" v-for="(btn, btn_index) in instrument.buttons">
+                            <button v-for="subdivision in btn.subdivision" @click="toggle_button(inst_index, btn_index)" :class="{ clicked:btn.clicked }"><audio :id="String(inst_index) + String(btn_index)" :src="instrument.sound"></audio></button>
+                            <select v-model="sub_select" @change="add_subdivision(inst_index, btn_index)">
+                                <option disabled>Choose a subdivision</option>
+                                <option v-for="n in 13" :value="n">[[n]]</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <script>
+            let app = new Vue({
+                el: '#app',
+                delimiters: ['[[', ']]'],
+                data: {
+                    ts_value_array: ['2', '4', '8'],
+                    tempo_value: 120,
+                    ts_beat: 4,
+                    ts_value: 4,
+                    inst_choice: '',
+                    sub_select: 1,
+                    inst_data: [],
+                    score: [],
+                    sub_choice: [],
+                },
+                methods: {
+                    add_instrument: function () {
+                        // console.log("hey there")
+                        buttons = []
+                        for (let i=0; i<this.ts_beat; ++i) {
+                            buttons.push({
+                                clicked: false,
+                                subdivision: 1,
+                            })
+                        }
+                        this.score.push({
+                            ...this.inst_choice,
+                            buttons: buttons,
+                        })
+                        this.inst_choice = ''
+                        console.log(this.score)
+                    },
+                    add_subdivision: function (inst_index, btn_index) {
+                        // console.log("almost there")
+                        console.log(inst_index, btn_index)
+                        this.score[inst_index].buttons[btn_index].subdivision = this.sub_select
+
+                    },
+                    toggle_button: function (inst_index, btn_index) {
+                        this.score[inst_index].buttons[btn_index].clicked = !this.score[inst_index].buttons[btn_index].clicked
+                        document.getElementById(`${inst_index}${btn_index}`).play()
+
+                    }
+                },
+                created: function() {
+                    axios({
+                        method: 'get',
+                        url: '{% url 'drumbeatapp:get_instruments' %}'
+                    }).then(response => {
+                        console.log(response)
+                        this.inst_data = response.data.instruments
+                    })
+                }
+            })
+        </script>
+    </body>
+</html>

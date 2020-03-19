@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="ie=edge">
+        <title>DrumBeat</title>
+        <!-- Axios -->
+        <script type="text/javascript" src="https://unpkg.com/axios/dist/axios.min.js"></script>
+        <!-- Flat -->
+        <script src="https://prod.flat-cdn.com/embed-js/v1.3.0/embed.min.js"></script>
+    </head>
+    <body>
+        <div id="main">
+            <iframe src="https://flat.io/score/5e6ab3fb0c8544618bf10c63/" width="700" height="700"></iframe>
+        </div>
+        <script src="https://prod.flat-cdn.com/embed-js/v1.3.0/embed.min.js"></script>
+        <script>
+            let scoreUrl = ''
+            var container = document.getElementById('embed-container');
+            var embed = new Flat.Embed(container, {
+                score: '',
+                embedParams: {
+                appId: '5e692f322e45d91c9318accf',
+                controlsPosition: 'bottom',
+                }
+            });
+            axios({
+                method: 'post',
+                url: 'https://api.flat.io/v2/scores',
+                data: {
+                    "title": "My new score",
+                    "privacy": "private",
+                    "data": "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?><!DOCTYPE score-partwise PUBLIC\"-//Recordare//DTD MusicXML 3.1 Partwise//EN\" \"http://www.musicxml.org/dtds/partwise.dtd\"><score-partwise version=\"3.1\"><part-list><score-part id=\"P1\"><part-name>Music</part-name></score-part></part-list><part id=\"P1\"><measure number=\"1\"><attributes><divisions>1</divisions><key><fifths>0</fifths></key><time><beats>4</beats><beat-type>4</beat-type></time><clef><sign>G</sign><line>2</line></clef></attributes><note><pitch><step>C</step><octave>4</octave></pitch><duration>4</duration><type>whole</type></note></measure></part></score-partwise>",
+                    "googleDriveFolder": "0B-0000000000000000"
+                },
+                headers: {
+                    'Authorization': 'Bearer 216305f63fca65082a437389b2c414f65257a9447e927bea475f28ad7c50a7152b9345b41354252fc83eac895a5ba18317690c867e52341f8972fecc997d1cec'
+                },
+            }).then(response => {
+                scoreUrl = response.data.htmlUrl
+            })
+        </script>
+    </body>
+</html>
