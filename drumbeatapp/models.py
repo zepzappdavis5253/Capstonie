@@ -2,7 +2,7 @@ from django.db import models
 
 
 
-class Instruments(models.Model):
+class Instrument(models.Model):
     name = models.CharField(max_length=30)
     sound = models.CharField(max_length=2000)
 
