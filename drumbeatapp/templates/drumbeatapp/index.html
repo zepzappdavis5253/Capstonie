@@ -15,7 +15,8 @@
     </head>
     <body>
         <div id="app">
-            <audio :id="instrument.name" v-for="instrument in inst_data" :src="instrument.sound"></audio>
+            <button @click="loadPreset1">Preset 1</button>
+            <audio :id="'inst' + inst.id" v-for="inst in inst_data" :src="inst.sound"></audio> <!--using the instrument & the instrument id to bind the audio file with the instrument-->
             <div class="time_signature_container">
                 <label>Time Signature:</label>
                 <span class="time_signature" id="time_signature">
@@ -38,23 +39,28 @@
                 bpm
             </div>
             <div class="inst_select_container">
-                <span id="instrument_select">
+                <span id="inst_select_span">
                     <label>Instrument:</label>
-                    <select id="inst_select" v-model="inst_choice" @change="add_instrument">
+                    <select id="inst_select" v-model="inst_choice" @change="addInstrument">
                         <option disabled>Choose an Instrument</option>
-                        <option v-for="instrument in inst_data" :value="instrument">[[instrument.name]]</option>
+                        <option v-for="inst in inst_data" :value="inst">[[inst.name]]</option>
                     </select>
                 </span>
             </div>
-            <button @click="clearPage">Clear</button>
+            <button @click="clearScore">Clear Score</button>
+            <label class="switch">
+                <input v-model="playing" @change="playToggle" type="checkbox">
+                <span class="slider round"></span>
+            </label>
             <div class="interface_container" id="interface_container">
-                <div class="instrument_div" v-for="(instrument, inst_index) in score.measures">
-                    <div class="delete">X</div>
-                    <div class="instrument_name">[[instrument.name]]</div>
+                <div class="measure_div" v-for="(inst, inst_index) in score.measures">
+                    <div class="delete_btn_div"><button class="delete_btn" @click="deleteMeasure(inst_index)">X</button></div>
+                    <div class="inst_name_div">[[inst.name]]</div>
+                    <div class="play_measure_btn_div"><button class="play_measure_btn" @click="playMeasure(inst.id)">Play</button></div>
                     <div class="measure">
-                        <div class="beat_container" v-for="(beat, beat_index) in instrument.beats">
-                            <button v-for="(btn, btn_index) in beat.buttons" @click="toggle_button(beat_index, btn_index)" :class="{ clicked:btn.clicked }"><audio :id="String(beat_index) + String(btn_index)" :src="instrument.sound"></audio></button>
-                            <select v-model="sub_select" @change="add_subdivision(beat.id)">
+                        <div class="beat_container" v-for="(beat, beat_index) in inst.beats">
+                            <button v-for="(btn, btn_index) in beat.buttons" @click="btn.clicked = !btn.clicked; playInstrument(inst.instrument_id);" :class="{ clicked:btn.clicked }"></button>
+                            <select v-model="beat.subdivision" @change="addSubdivision(beat)">
                                 <option disabled>Choose a subdivision</option>
                                 <option v-for="n in 13" :value="n">[[n]]</option>
                             </select>
@@ -77,76 +83,210 @@
                     inst_choice: '',
                     sub_select: 1,
                     inst_data: [],
+                    interval: null,
+                    playing: false,
                     score: {
+                        score_name: '',
                         measures: [],
                         ts: this.ts_beat,
                         tempo: this.tempo_value
                     },
-                    sub_choice: [],
                 },
                 methods: {
-                    play_instrument: function(name) {
-                        document.querySelector('#' + name).play()
+                    playInstrument: function(inst_id) {
+                        console.log(inst_id)
+                        let audio = document.querySelector('#inst' + inst_id)
+                        audio.currentTime=0
+                        audio.play()
                     },
-                    add_instrument: function () {
+                    playMeasure: function (inst_id) {
+                        console.log('ye')
+                        setInterval((inst_id) => {
+                            console.log('eh')
+                            this.playInstrument(inst_id)
+                        },this.tempo_value/60*1000)
+                    },
+                    playScore: function () {
+                        let tempo = 60000/this.tempo_value
+                        let beat_index = 0
+                        this.playing = true
+                        this.interval = setInterval(() => {
+                            for (let i=0; i<this.score.measures.length; ++i) {
+                                let beat = this.score.measures[i].beats[beat_index]
+                                if (beat.subdivision == 1) { // if there's no subdivision, just check if the note should be played
+                                    if (beat.buttons[0].clicked) {
+                                        this.playInstrument(this.score.measures[i].instrument_id)
+                                    }
+                                } else {
+                                    console.log('yo yo yo!')
+                                    // if there are subdivisions, create another setInterval
+                                    let buttonIndex = 0
+                                    let sub_interval = setInterval(() => {
+                                        if (beat.buttons[buttonIndex].clicked) {
+                                            this.playInstrument(this.score.measures[i].instrument_id)
+                                        }
+                                        buttonIndex++
+                                        if (buttonIndex == beat.subdivision) {
+                                            clearInterval(sub_interval)
+                                        }
+                                    }, tempo/beat.subdivision)
+                                }
+                            }
+                            beat_index++
+                            if (beat_index >= this.ts_beat) {
+                                beat_index=0
+                            }
+                        },tempo)
+                    },
+                    addInstrument: function () {
                         // console.log("hey there")
                         beats = []
                         for (let i=0; i<this.ts_beat; ++i) {
                             beats.push({
-                                id: String(this.score.measures.length) + String(i),
                                 subdivision: 1,
                                 buttons: [{clicked: false}],
                             })
                         }
+                        console.log(this.inst_choice)
                         this.score.measures.push({
-                            ...this.inst_choice,
+                            instrument_id: this.inst_choice.id,
                             beats: beats,
                         })
                         this.inst_choice = ''
-                        console.log(this.score.measures)
+                        // console.log(this.score.measures)
                     },
-                    add_subdivision: function (beat_id) {
-                        buttons = []
-                        for (let i = 0; i < this.score.measures.length; i ++) {
-                            for (let j =0; j < this.score.measures[i].beats.length; j++){
-                                if(this.score.measures[i].beats[j].id == beat_id){
-                                    for (let x =0; x< this.sub_select; ++x){
-                                        buttons.push({clicked:false})
-                                        console.log(beat_id == this.score.measures[i].beats[j].id)
-                                    }
-                                    this.score.measures[i].beats[j].buttons = buttons
-                                    this.score.measures[i].beats[j].subdivision = this.sub_select
-                                }
-                            }
+                    addSubdivision: function (beat) {
+                        beat.buttons = []
+                        for (let i=0; i<beat.subdivision; ++i) {
+                            beat.buttons.push({
+                                clicked: false
+                            })
                         }
-                        this.sub_select = 1
+                        // buttons = []
+                        // for (let i=0; i<this.score.measures.length; i++) {
+                        //     for (let j=0; j<this.score.measures[i].beats.length; j++) {
+                        //         if(this.score.measures[i].beats[j].id == beat_id) {
+                        //             for (let x=0; x<this.sub_select; ++x) {
+                        //                 buttons.push({clicked:false})
+                        //                 // console.log(beat_id == this.score.measures[i].beats[j].id)
+                        //             }
+                        //             this.score.measures[i].beats[j].buttons = buttons
+                        //             this.score.measures[i].beats[j].subdivision = this.sub_select
+                        //         }
+                        //     }
+                        // }
+                        // this.sub_select = 1
                     },
-                    toggle_button: function (beat_id, btn_index) {
-                        for (let i=0; i<this.score.measures.length; i++) {
-                            for (let j =0; j < this.score.measures[i].beats.length; j++){
-                                if(this.score.measures[i].beats[j].id == beat_id){
-                                    this.score.measures[i].beats[j].buttons[btn_index].clicked = !this.score.measures[i].beats[j].buttons[btn_index].clicked
-                                }
-                            }
-                        }
-                        document.getElementById(`${beat_id}${btn_index}`).play()
-
-                    },
-                    clearPage: function () {
+                    clearScore: function () {
                         this.score = {
                             measures: [],
                             ts: this.ts_beat,
                             tempo: this.tempo_value
                         }
+                        clearInterval(this.interval)
+                        this.playing = false
                     },
+                    deleteMeasure: function (inst_index) {
+                        this.score.measures = this.score.measures.filter((el,i)=>i!=inst_index)
+                    },
+                    playToggle: function () {
+                        if (this.playing == true) {
+                            this.playScore()
+                        }
+                        else {
+                            clearInterval(this.interval)
+                        }
+                    },
+                    loadPreset1: function() {
+                        this.score = {
+                          "score_name": "",
+                          "measures": [
+                            {
+                              "instrument_id": 2,
+                              "beats": [
+                                {
+                                  "subdivision": 1,
+                                  "buttons": [
+                                    {
+                                      "clicked": true
+                                    }
+                                  ]
+                                },
+                                {
+                                  "subdivision": 1,
+                                  "buttons": [
+                                    {
+                                      "clicked": false
+                                    }
+                                  ]
+                                },
+                                {
+                                  "subdivision": 1,
+                                  "buttons": [
+                                    {
+                                      "clicked": true
+                                    }
+                                  ]
+                                },
+                                {
+                                  "subdivision": 1,
+                                  "buttons": [
+                                    {
+                                      "clicked": false
+                                    }
+                                  ]
+                                }
+                              ]
+                            },
+                            {
+                              "instrument_id": 3,
+                              "beats": [
+                                {
+                                  "subdivision": 1,
+                                  "buttons": [
+                                    {
+                                      "clicked": false
+                                    }
+                                  ]
+                                },
+                                {
+                                  "subdivision": 1,
+                                  "buttons": [
+                                    {
+                                      "clicked": true
+                                    }
+                                  ]
+                                },
+                                {
+                                  "subdivision": 1,
+                                  "buttons": [
+                                    {
+                                      "clicked": false
+                                    }
+                                  ]
+                                },
+                                {
+                                  "subdivision": 1,
+                                  "buttons": [
+                                    {
+                                      "clicked": true
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                    }
                 },
                 created: function() {
                     axios({
                         method: 'get',
                         url: '{% url 'drumbeatapp:get_instruments' %}'
                     }).then(response => {
-                        console.log(response)
+                        // console.log(response)
                         this.inst_data = response.data.instruments
+                        // console.log(this.inst_data)
                     })
                 }
             })
