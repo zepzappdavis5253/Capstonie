@@ -1,5 +1,6 @@
 from django.contrib import admin
+from .models import Instrument, Score
 
-from .models import Instrument
 
 admin.site.register(Instrument)
+admin.site.register(Score)

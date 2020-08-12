@@ -1,16 +1,99 @@
 
 body {
     margin: 0;
+    background-color: rgb(45,45,45);
+    color: white;
+    font-family: 'Fjalla One', sans-serif;
+}
+
+.nav-wrapper {
+    display: flex;
+    justify-content: space-between;
+    margin-right: 2px;
+    margin-left: 2px;
+    padding-left: 27px;
+    padding-right: 50px;
+    padding-top: 20px;
+    padding-bottom: 20px;
+    background-color: rgb(83,110,122);
+    border-bottom: 1px solid grey;
+}
+
+.nav_logo_span {
+    display: flex;
+}
+
+.drumbeat_nav_logo_label {
+    display: flex;
+    color: black;
+    margin-top: 15px;
+    margin-left: 6px;
+}
+
+.welcome_user_span {
+    font-size: 150%;
+    color: black;
+    padding: 15px;
+}
+
+.logout_url_span {
+    margin-top: 18px;
+}
+
+.brand-logo {
+    width: 50px;
+    height: 50px;
+}
+
+a {
+    color: rgb(254,170,63);
 }
 
 #app {
     height: 100vh;
     width: 100vw;
-    background-color: rgb(45,45,45);
+}
+
+.top_container {
+    display: flex;
+    justify-content: space-evenly;
+    margin-top: 40px;
+}
+
+.top_container_child1 > * {
+    margin-bottom: 5px;
+}
+
+.top_container_child2 > * {
+    margin-bottom: 5px;
+}
+
+.presets_container {
+    display: flex;
+    flex-direction: column;
+    width: 290.56px;
+    align-items: center;
+}
+
+.preset_btns_container {
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+    justify-content: center;
+}
+
+.presets_label {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 10px;
+}
+
+.preset_btns {
+    margin: 5px;
 }
 
 .interface_container {
-    padding: 20px;
+    padding: 27px;
     justify-content: center;
     width: 95vw;
 }
@@ -18,7 +101,10 @@ body {
 .measure_div {
     display: flex;
     width: 100%;
-    height: 30px;
+    height: 35px;
+    background-color: rgb(83,110,122);
+    margin-bottom: 4px;
+    border-radius: 2.5px;
 }
 
 .measure {
@@ -27,17 +113,34 @@ body {
     justify-content: space-evenly;
 }
 
-.delete_btn {
-    width: 20px;
+.delete_btn_div {
+    width: 34px;
     display: flex;
     align-items: center;
+    justify-content: center;
 }
 
-.inst_name_span {
-    width: 120px;
-    text-align: center;
+.delete_btn {
+    background-color: rgb(191,25,1);
+    color: white;
+    border-color: black;
+    border-radius: 4.5px;
+    height: 60%;
+}
+
+.play_measure_btn_div {
+    width: 50px;
     display: flex;
     align-items: center;
+    justify-content: center;
+}
+
+.inst_name_div {
+    width: 120px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white !important;
 }
 
 .beat_container {
@@ -47,17 +150,64 @@ body {
 }
 
 .beat_container select {
-    width: 20px;
+    display: flex;
+    justify-content: center;
+    margin-top: 3.5px;
+    margin-right: 10px;
+    height: 80%;
+    width: 15px;
 }
 
 .beat_container button {
+    display: flex;
+    justify-content: center;
+    margin-top: 3.5px;
+    margin-right: 2px;
+    height: 80%;
     width: 100%;
     background-color: rgb(92,92,92);
+    border-radius: 2.5px;
+    padding: 0;
 }
 
 .clicked {
     background-color: rgb(130,156,208)!important;
 }
+
+
+
+
+/* Register and Login Cards */
+
+.col {
+    height: 100vh;
+}
+
+.card {
+    margin: 50px auto !important;
+    max-width: 450px;
+}
+
+.card-title {
+    text-align: center;
+}
+
+.drumbeat_card_header {
+    color: black;
+    display: flex;
+    justify-content: center;
+    margin-top: 10px;
+    margin-left: 4px;
+}
+
+.top_of_card {
+    display: flex;
+}
+
+
+
+/* Toggle Play */
+
 
 /* The switch - the box around the slider */
 .switch {
